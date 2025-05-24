@@ -13,7 +13,7 @@ A simple, modern web dashboard that displays real-time weather updates and the l
 > ![Dashboard Screenshot](./screenshots/dashboard.png)
 > ![A City information](./screenshots/london.png)
 
----
+
 
 ## ✨ Features
 
