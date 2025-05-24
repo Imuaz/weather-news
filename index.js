@@ -1,21 +1,26 @@
-import express from 'express';
-import axios from 'axios';
-import bodyParser from 'body-parser';
+import express from "express";
+import bodyParser from "body-parser";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import homeRoutes from "./routes/homeRoutes.js";
 
 
-const app = express()
-const port = 3000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-app.use(express.static("public"));
-app.use(bodyParser.urlencoded({ extended: tru }));
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Set EJS as the view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 
+app.use("/", homeRoutes);
 
-
-
-
-
-
-app.listen(port, () => {
-    console.log(`server is running on port ${port}`);
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });

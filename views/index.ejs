@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/style/output.css" rel="stylesheet">
+    <title><%= title %>;</title>
+</head>
+<body class="p-4 md:p-8">
+    <!-- Background image container - add your image URL here -->
+    <div class="bg-image-container">
+        <!-- You can add your background image by uncommenting and adding your URL:
+        style="background-image: url('your-nature-image-url.jpg')" -->
+    </div>
+    
+    <!-- Semi-transparent overlay for better readability -->
+    <div class="bg-overlay"></div>
+
+    <div class="max-w-6xl mx-auto relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">Weather &amp; News Dashboard</h1>
+            <p class="text-white text-opacity-80">Search for a city to get weather updates and latest news</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="max-w-xl mx-auto mb-8">
+            <div class="relative">
+                <input type="text" id="citySearch" placeholder="Enter city name..." class="w-full px-6 py-4 rounded-full text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-lg">
+                <button id="searchBtn" class="absolute right-2 top-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full transition-colors duration-300">
+                    Search
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard" class="hidden">
+            <!-- Weather Card -->
+            <div class="glass rounded-xl p-6 mb-8 text-white">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="mb-4 md:mb-0">
+                        <h2 id="cityName" class="text-3xl font-bold mb-1">City Name</h2>
+                        <p id="currentDate" class="text-white text-opacity-80">Current Date</p>
+                        <div class="mt-4">
+                            <p id="temperature" class="text-5xl font-bold mb-2">--°C</p>
+                            <p id="weatherDescription" class="text-xl capitalize">Weather Description</p>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div id="weatherIcon" class="weather-icon">⛅</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-4 md:mt-0">
+                        <div class="text-center glass rounded-lg p-3">
+                            <p class="text-sm text-white text-opacity-80">Humidity</p>
+                            <p id="humidity" class="text-xl font-semibold">--%</p>
+                        </div>
+                        <div class="text-center glass rounded-lg p-3">
+                            <p class="text-sm text-white text-opacity-80">Wind</p>
+                            <p id="wind" class="text-xl font-semibold">-- km/h</p>
+                        </div>
+                        <div class="text-center glass rounded-lg p-3">
+                            <p class="text-sm text-white text-opacity-80">Feels Like</p>
+                            <p id="feelsLike" class="text-xl font-semibold">--°C</p>
+                        </div>
+                        <div class="text-center glass rounded-lg p-3">
+                            <p class="text-sm text-white text-opacity-80">Pressure</p>
+                            <p id="pressure" class="text-xl font-semibold">-- hPa</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Section -->
+            <h2 class="text-2xl font-bold text-white mb-4">Latest News</h2>
+            <div id="newsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- News cards will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="hidden">
+            <div class="flex justify-center items-center h-40">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-white"></div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden bg-red-500 text-white p-4 rounded-lg text-center max-w-xl mx-auto">
+            <p>Unable to fetch data. Please try another city or check your connection.</p>
+        </div>
+
+        <!-- Initial State with Clock -->
+        <div id="initialState" class="text-center text-white mt-8">
+            <!-- Default City Weather Summary -->
+            <div class="glass rounded-xl p-6 mb-8 max-w-2xl mx-auto">
+                <h2 id="defaultCityName" class="text-2xl font-bold mb-2">New York</h2>
+                
+                <!-- Clock -->
+                <div class="flex flex-col md:flex-row items-center justify-center gap-8 mb-6">
+                    <div class="clock-container">
+                        <div class="clock">
+                            <div class="clock-face">
+                                <div class="hand hour-hand" id="hourHand"></div>
+                                <div class="hand minute-hand" id="minuteHand"></div>
+                                <div class="hand second-hand" id="secondHand"></div>
+                                <div class="clock-center"></div>
+                                
+                                <!-- Clock numbers will be added dynamically -->
+                                <div id="clockNumbers"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="digital-time" id="digitalTime">12:00:00</div>
+                        <div class="digital-date" id="digitalDate">Monday, January 1</div>
+                        
+                        <!-- Default Weather Display -->
+                        <div class="flex items-center justify-center mt-4">
+                            <div id="defaultWeatherIcon" class="text-5xl mr-4">⛅</div>
+                            <div>
+                                <p id="defaultTemperature" class="text-3xl font-bold">--°C</p>
+                                <p id="defaultWeatherDescription" class="text-lg">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center glass rounded-lg p-3">
+                        <p class="text-sm text-white text-opacity-80">Humidity</p>
+                        <p id="defaultHumidity" class="text-xl font-semibold">--%</p>
+                    </div>
+                    <div class="text-center glass rounded-lg p-3">
+                        <p class="text-sm text-white text-opacity-80">Wind</p>
+                        <p id="defaultWind" class="text-xl font-semibold">-- km/h</p>
+                    </div>
+                    <div class="text-center glass rounded-lg p-3">
+                        <p class="text-sm text-white text-opacity-80">Feels Like</p>
+                        <p id="defaultFeelsLike" class="text-xl font-semibold">--°C</p>
+                    </div>
+                    <div class="text-center glass rounded-lg p-3">
+                        <p class="text-sm text-white text-opacity-80">Pressure</p>
+                        <p id="defaultPressure" class="text-xl font-semibold">-- hPa</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="text-2xl mt-4">Search for a city to get detailed weather and news</h3>
+            <p class="mt-2 opacity-70">Get weather updates and latest news in one place</p>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
