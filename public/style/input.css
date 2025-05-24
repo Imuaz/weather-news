@@ -18,7 +18,7 @@ body {
     height: 100%;
     z-index: -1;
     /* You can add your image here */
-    /* background-image: url('your-image-url.jpg'); */
+    background-image: url('../image/11743204.jpg');
     background-size: cover;
     background-position: center;
 }
