@@ -2,7 +2,7 @@ import {
     citySearch, searchBtn, dashboard, loading, errorMessage, initialState
 } from './domRefs.js';
 import { createClockNumbers, updateClock } from './clock.js';
-import { updateWeatherUI, setWeatherIcon } from './weather.js';
+import { updateWeatherUI, setWeatherIcon, detectUserCity } from './weather.js';
 import { updateNewsUI } from './news.js';
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -19,28 +19,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    function loadDefaultCityWeather() {
-        const defaultCity = 'New York';
+    async function loadDefaultCityWeather() {
+        const defaultCity = await detectUserCity();
         document.getElementById('defaultCityName').textContent = defaultCity;
 
-        fetch(`/api/weather/${defaultCity}`)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('defaultTemperature').textContent = `${Math.round(data.main.temp)}°C`;
-                document.getElementById('defaultWeatherDescription').textContent = data.weather[0].description;
-                document.getElementById('defaultHumidity').textContent = `${data.main.humidity}%`;
-                document.getElementById('defaultWind').textContent = `${data.wind.speed} km/h`;
-                document.getElementById('defaultFeelsLike').textContent = `${Math.round(data.main.feels_like)}°C`;
-                document.getElementById('defaultPressure').textContent = `${data.main.pressure} hPa`;
+        try {
+            const res = await fetch(`/api/weather/${defaultCity}`);
+            if (!res.ok) throw new Error('Weather API error');
+            const data = await res.json();
 
-                const condition = data.weather[0].main.toLowerCase();
-                const defaultWeatherIcon = document.getElementById('defaultWeatherIcon');
-                setWeatherIcon(defaultWeatherIcon, condition);
-            })
-            .catch(() => {
-                document.getElementById('defaultTemperature').textContent = '22°C';
-                document.getElementById('defaultWeatherDescription').textContent = 'Weather data unavailable';
-            });
+            document.getElementById('defaultTemperature').textContent = `${Math.round(data.main.temp)}°C`;
+            document.getElementById('defaultWeatherDescription').textContent = data.weather[0].description;
+            document.getElementById('defaultHumidity').textContent = `${data.main.humidity}%`;
+            document.getElementById('defaultWind').textContent = `${data.wind.speed} km/h`;
+            document.getElementById('defaultFeelsLike').textContent = `${Math.round(data.main.feels_like)}°C`;
+            document.getElementById('defaultPressure').textContent = `${data.main.pressure} hPa`;
+
+            const condition = data.weather[0].main.toLowerCase();
+            const defaultWeatherIcon = document.getElementById('defaultWeatherIcon');
+            setWeatherIcon(defaultWeatherIcon, condition);
+        } catch (err) {
+            console.error('Failed to load default weather:', err);
+            document.getElementById('defaultTemperature').textContent = '22°C';
+            document.getElementById('defaultWeatherDescription').textContent = 'Weather data unavailable';
+        }
     }
 
     function searchCity() {
